@@ -7,8 +7,6 @@ from django.shortcuts import render, redirect
 from django.urls import reverse
 
 from django_app import models
-from bottle import BaseRequest
-
 
 
 def list_compr(request: HttpRequest) -> JsonResponse:
@@ -84,6 +82,7 @@ def post_create(request: HttpRequest) -> HttpResponse:
         context = {}
         return redirect(reverse('django_app:post_list', args=()))
 
-def post_delete(request: HttpRequest, pk:int) -> HttpResponse:
+
+def post_delete(request: HttpRequest, pk: int) -> HttpResponse:
     models.Post.objects.get(id=pk).delete()
     return redirect(reverse('django_app:post_list', args=()))
