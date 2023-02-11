@@ -71,6 +71,8 @@ def post_create(request: HttpRequest) -> HttpResponse:
         context = {}
         return render(request, 'post_create.html', context=context)
     elif request.method == 'POST':
+        print('printed', request.POST)
+
         title = request.POST.get('title', None)
         description = request.POST.get('description', "")
         models.Post.objects.create(

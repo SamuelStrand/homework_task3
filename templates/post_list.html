@@ -1,20 +1,21 @@
 {% extends "components/base.html" %}
 {% block main %}
 <a href="{% url 'django_app:post_create' %}" class="btn btn-primary btn-lg m-5 p-3">Создать пост</a>
+     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
     {%  for post in posts %}
     <div class=" container container-fluid w-25 border border-danger mt-2">
-    <div class="row d-flex justify-content-between">
-      <div class="col-sm">
+      <div class="col p-1">
         <h2 class="fw-normal">{{ post.title }}</h2>
         <p>{{ post.description }}</p>
         <p><a class="btn btn-secondary" href="{% url 'django_app:post_detail' post.id %}">Подробнее</a></p>
           <a href="{% url 'django_app:post_delete' post.id %}" class="text-decoration-none btn">
              <i class="fa-solid fa-trash text-danger"></i>
          </a>
-      </div>
 
     </div>
     </div>
+
     {% endfor %}
+    </div>
 {% endblock main %}
 

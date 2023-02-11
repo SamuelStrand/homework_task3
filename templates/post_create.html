@@ -8,11 +8,11 @@
       {% csrf_token %}
                  <h1 class="h3 mb-3 fw-normal">Создайте свой пост!</h1>
                      <div class="form-floating">
-                        <input type="text" class="form-control" id="floatingInput" placeholder="Заголовок">
+                        <input type="text" class="form-control" id="floatingInput" placeholder="Заголовок" name="title">
                         <label for="floatingInput">Заголовок</label>
         </div>
                     <div class="form-floating">
-                        <input type="text" class="form-control" id="floatingPassword" placeholder="Описание">
+                        <input type="text" class="form-control" id="floatingPassword" placeholder="Описание" name="description">
                         <label for="floatingPassword">Описание</label>
     </div>
 
