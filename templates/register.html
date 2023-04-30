@@ -10,18 +10,13 @@
 
 <section class="py-5 text-center container">
     <main class="form-signin">
-  <form action="{% url 'django_app:login' %}"
+  <form action="{% url 'django_app:register' %}"
     method="POST"
     enctype="multipart/form-data">
    <div class="text-end">
-           {% if user.is_authenticated %}
-                <a href="{% url 'django_app:logout' %}" type="button" class="btn btn-outline-danger me-2">Выйти ({{ user.username }})</a>
-            {% else %}
-                <a href="{% url 'django_app:login' %}" type="button" class="btn btn-outline-primary me-2">Войти (аноним)</a>
-            {% endif %}
 
       {% csrf_token %}
-      <h1 class="h3 mb-3 fw-normal">Введите свои данные</h1>
+      <h1 class="h3 mb-3 fw-normal">Регистрация аккаунта</h1>
     {{request.user}}
     <div class="form-floating">
 
@@ -32,7 +27,7 @@
       <input type="password" class="form-control" id="floatingPassword" placeholder="Password" name="password">
       <label for="floatingPassword">Пароль</label>
     </div>
-    <button class="w-100 btn btn-lg btn-primary" type="submit">Войти</button>
+    <button class="w-100 btn btn-lg btn-primary" type="submit">Зарегистрироваться</button>
   </form>
 </main>
 </section>

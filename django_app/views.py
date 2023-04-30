@@ -1,7 +1,11 @@
 import json
 
+from django.contrib.auth import get_user_model
+
 from django.contrib.auth import login, authenticate, logout
-from django.contrib.auth.models import update_last_login
+from django.contrib.auth.hashers import make_password
+from django.contrib.auth.models import update_last_login, User
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.http import HttpResponse, JsonResponse, HttpRequest
 from django.shortcuts import render, redirect
 from django.urls import reverse
@@ -37,12 +41,11 @@ def login_f(request: HttpRequest) -> HttpResponse:
             if user_obj:
                 login(request, user_obj)
                 update_last_login(sender=None, user=user_obj)
-                return redirect(reverse('django_app:list_comrp', args=()))
+                return redirect(reverse('django_app:post_list', args=()))
             else:
                 raise Exception('данные не совпадают')
         else:
             raise Exception('no data')
-
 
 def logout_f(request: HttpRequest) -> HttpResponse:
     logout(request)
@@ -51,9 +54,36 @@ def logout_f(request: HttpRequest) -> HttpResponse:
 
 def post_list(request: HttpRequest) -> HttpResponse:
     posts = models.Post.objects.all()
-    context = {'posts': posts}
+
+    if request.method == 'POST':
+        search_by_title = request.POST.get('search', None)
+        if search_by_title is not None:
+            posts = posts.filter(title__contains=str(search_by_title))
+        filter_by_user = request.POST.get('filter', None)
+        if filter_by_user is not None:
+            posts = posts.filter(user=User.objects.get(username=filter_by_user))
+
+    selected_page_number = request.GET.get('page', 1)
+    selected_limit_objects_per_page = request.GET.get('limit', 6)
+
+    page = CustomPaginator.paginate(
+        object_list=posts, per_page=selected_limit_objects_per_page, page_number=selected_page_number
+    )
+
+    users = User.objects.all()
+    context = {'page': page, 'username': request.user, 'users': users}
     return render(request, 'post_list.html', context=context)
 
+def register(request: HttpRequest) -> HttpResponse:
+    username = request.POST.get('username', '')
+    password = request.POST.get('password', '')
+    if username and password:
+        User.objects.create(
+            username=username,
+            password=make_password(password)
+        )
+        return redirect(reverse('django_app:login'))
+    return render(request, 'register.html')
 
 def home(request: HttpRequest) -> HttpResponse:
     context = {}
@@ -72,7 +102,6 @@ def post_create(request: HttpRequest) -> HttpResponse:
         return render(request, 'post_create.html', context=context)
     elif request.method == 'POST':
         print('printed', request.POST)
-
         title = request.POST.get('title', None)
         description = request.POST.get('description', "")
         models.Post.objects.create(
@@ -88,3 +117,24 @@ def post_create(request: HttpRequest) -> HttpResponse:
 def post_delete(request: HttpRequest, pk: int) -> HttpResponse:
     models.Post.objects.get(id=pk).delete()
     return redirect(reverse('django_app:post_list', args=()))
+
+
+class CustomPaginator:
+    @staticmethod
+    def paginate(object_list: any, per_page=5, page_number=1):
+        # https://docs.djangoproject.com/en/4.1/topics/pagination/
+        paginator_instance = Paginator(object_list=object_list, per_page=per_page)
+        try:
+            page = paginator_instance.page(number=page_number)
+        except PageNotAnInteger:
+            page = paginator_instance.page(number=1)
+        except EmptyPage:
+            page = paginator_instance.page(number=paginator_instance.num_pages)
+        return page
+
+
+def all_users(request: HttpRequest) -> HttpResponse:
+    user = get_user_model()
+    users = user.objects.all()
+    context = {'users': users}
+    return render(request, 'all_users.html', context=context)

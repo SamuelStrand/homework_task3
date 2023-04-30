@@ -3,10 +3,28 @@
      {% comment %}
     Проверяю, как работают теги
     {% endcomment %}
+<form action="{% url 'django_app:post_list' %}"
+    method="POST"
+    enctype="multipart/form-data"
+  >
+      {% csrf_token %}
+        <div class="input-group m-3">
+            <input type="search" class="form-control p-3 w-50"  placeholder="введите сюда часть названия..." name="search">
+            <button class="btn btn-lg btn-primary" type="submit">искать</button>
+        </div>
+<select class="form-select form-select-lg mb-3" required aria-label=".form-select-lg example" name="filter">
+  <option selected>Выберите пользователя для фильтрации</option>
+    {% for i in users %}
+        <option value="{{ i.username }}">{{ i.username }}</option>
+    {% endfor %}
+</select>
+            <button class="btn btn-lg btn-primary" type="submit">искать</button>
+  </form>
+
 <a href="{% url 'django_app:post_create' %}" class="btn btn-primary btn-lg m-5 p-3">Создать пост</a>
-     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-    {%  for post in posts %}
-    <div class=" container container-fluid w-25 border border-danger mt-2">
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+    {% for post in page %}
+     <div class=" container container-fluid w-25 border border-danger m-5">
       <div class="col p-1">
         <h2 class="fw-normal">{{ post.title }}</h2>
         <p>{{ post.description }}</p>
@@ -15,10 +33,11 @@
              <i class="fa-solid fa-trash text-danger"></i>
          </a>
 
-    </div>
-    </div>
+        </div>
+     </div>
 
     {% endfor %}
     </div>
+    {% include 'components/paginator.html' %}
 {% endblock main %}
 

@@ -98,9 +98,11 @@
     <div class="">
       <a href="{% url 'django_app:home' %}" class="float-md-start mb-0 text-decoration-none h5">Главная страница</a>
       <nav class="nav nav-masthead justify-content-around float-md-end">
-        <a class="nav-link fw-bold py-1 px-0 active" aria-current="page" href="#">Тут что-то будет</a>
-        <a class="nav-link fw-bold py-1 px-5" href="#">Тут когда-нибудь тоже наверно</a>
+        <a class="nav-link fw-bold py-1 px-0 active" aria-current="page" href="{% url 'django_app:all_users' %}">Список пользователей</a>
+        <a class="nav-link fw-bold py-1 px-5" href="{% url 'django_app:register' %}">Регистрация</a>
         <a class="nav-link fw-bold py-1 px-0" href="{% url 'django_app:login' %}">Логин</a>
+          <p class="nav-link fw-bold py-1 px-5 text text-danger" href="{% url 'django_app:login' %}">{{ username }}</p>
+
       </nav>
     </div>
   </header>
