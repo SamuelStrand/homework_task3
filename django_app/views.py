@@ -156,7 +156,7 @@ def get_data_excel(request):
         description = post.description
         post_cols = [post_user, title, description]
         for col_index_posts, post_value in enumerate(post_cols, 1):
-            post_cell = post_worksheet.cell(row_index_posts, col_index_posts, post_value)
+            post_worksheet.cell(row_index_posts, col_index_posts, post_value)
     post_workbook.save('temp/posts_data.xlsx')
     return HttpResponse('<h1>Данные успешно выгружены в файл!</h1>')
 
