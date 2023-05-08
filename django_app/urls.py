@@ -17,6 +17,7 @@ urlpatterns = [
     path('post/<int:pk>/delete/', views.post_delete, name='post_delete'),
     path('all_users/', views.all_users, name='all_users'),
     path('register/', views.register, name='register'),
+    path('get_data_excel/', views.get_data_excel, name='get_data_excel'),
     # path('post/create', views.post_create, name='post_create'),
     # path('post/<int:pk>/detail/', views.post_detail, name='post_detail'),
     # path('post/<int:pk>/update/', views.post_update, name='post_update'),

@@ -9,8 +9,11 @@ from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.http import HttpResponse, JsonResponse, HttpRequest
 from django.shortcuts import render, redirect
 from django.urls import reverse
+from openpyxl.workbook import Workbook
 
 from django_app import models
+
+from django_app.models import Post
 
 
 def list_compr(request: HttpRequest) -> JsonResponse:
@@ -47,6 +50,7 @@ def login_f(request: HttpRequest) -> HttpResponse:
         else:
             raise Exception('no data')
 
+
 def logout_f(request: HttpRequest) -> HttpResponse:
     logout(request)
     return redirect(reverse('django_app:login', args=()))
@@ -74,6 +78,7 @@ def post_list(request: HttpRequest) -> HttpResponse:
     context = {'page': page, 'username': request.user, 'users': users}
     return render(request, 'post_list.html', context=context)
 
+
 def register(request: HttpRequest) -> HttpResponse:
     username = request.POST.get('username', '')
     password = request.POST.get('password', '')
@@ -84,6 +89,7 @@ def register(request: HttpRequest) -> HttpResponse:
         )
         return redirect(reverse('django_app:login'))
     return render(request, 'register.html')
+
 
 def home(request: HttpRequest) -> HttpResponse:
     context = {}
@@ -117,6 +123,42 @@ def post_create(request: HttpRequest) -> HttpResponse:
 def post_delete(request: HttpRequest, pk: int) -> HttpResponse:
     models.Post.objects.get(id=pk).delete()
     return redirect(reverse('django_app:post_list', args=()))
+
+
+def get_data_excel(request):
+    user_workbook = Workbook()
+    user_worksheet = user_workbook.active
+
+    post_workbook = Workbook()
+    post_worksheet = post_workbook.active
+
+    users = User.objects.all()
+    posts = Post.objects.all()
+
+    for user_header_index, user_header_value in enumerate(['user_id', 'username', 'password', 'email', 'is_staff'], 1):
+        user_worksheet.cell(1, user_header_index, user_header_value)
+    for row_index, user in enumerate(users, 2):
+        user_id = user.id
+        username = user.username
+        password = user.password
+        email = user.email
+        is_staff = user.is_staff
+        cols = [user_id, username, password, email, is_staff]
+        for col_index, value in enumerate(cols, 1):
+            user_worksheet.cell(row_index, col_index, value)
+    user_workbook.save('temp/users_data.xlsx')
+
+    for post_header_index, post_header_value in enumerate(['post_user', 'title', 'description'], 1):
+        post_worksheet.cell(1, post_header_index, post_header_value)
+    for row_index_posts, post in enumerate(posts, 2):
+        post_user = str(post.user)
+        title = post.title
+        description = post.description
+        post_cols = [post_user, title, description]
+        for col_index_posts, post_value in enumerate(post_cols, 1):
+            post_cell = post_worksheet.cell(row_index_posts, col_index_posts, post_value)
+    post_workbook.save('temp/posts_data.xlsx')
+    return HttpResponse('<h1>Данные успешно выгружены в файл!</h1>')
 
 
 class CustomPaginator:
